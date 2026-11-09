@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Homestay</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Cpath d='M32 12 10 30h6v20h12V38h8v12h12V30h6z' fill='white'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">⌂</span><div><b id="propName">Homestay</b><small id="clock"></small></div></div>
+  <nav id="tabs">
+    <button data-tab="today" class="on" data-i18n="tabToday">Today</button>
+    <button data-tab="calendar" data-i18n="tabCalendar">Calendar</button>
+    <button data-tab="bookings" data-i18n="tabBookings">Bookings</button>
+    <button data-tab="guests" data-i18n="tabGuests">Guests</button>
+    <button data-tab="reports" data-i18n="tabReports">Reports</button>
+    <button data-tab="settings" data-i18n="tabSettings">Settings</button>
+  </nav>
+  <div class="topbtns">
+    <button class="btn primary" id="newBooking">＋ <span data-i18n="newBooking">New booking</span></button>
+    <button class="btn ghost" id="lockBtn" hidden>🔒</button>
+  </div>
+</header>
+
+<main>
+  <!-- ============ TODAY ============ -->
+  <section id="tab-today" class="tab on">
+    <div id="tdStats" class="cards"></div>
+    <div id="tdAlerts"></div>
+    <div class="cols3">
+      <div class="panel"><h3>🛬 <span data-i18n="arrivals">Arrivals</span></h3><div id="tdArrivals" class="list"></div></div>
+      <div class="panel"><h3>🛫 <span data-i18n="departures">Departures</span></h3><div id="tdDepartures" class="list"></div></div>
+      <div class="panel"><h3>🛏 <span data-i18n="inHouse">In house</span></h3><div id="tdInHouse" class="list"></div></div>
+    </div>
+    <div class="panel">
+      <h3>🧹 <span data-i18n="housekeeping">Housekeeping</span></h3>
+      <div id="tdRooms" class="hkgrid"></div>
+    </div>
+  </section>
+
+  <!-- ============ CALENDAR ============ -->
+  <section id="tab-calendar" class="tab">
+    <div class="bar">
+      <button class="btn" id="calPrev">◀</button>
+      <input type="date" id="calFrom">
+      <button class="btn" id="calNext">▶</button>
+      <button class="btn ghost" id="calToday" data-i18n="today">Today</button>
+      <span class="grow"></span>
+      <span class="legend"><i class="s-hold"></i><span data-i18n="s_hold">hold</span><i class="s-confirmed"></i><span data-i18n="s_confirmed">confirmed</span><i class="s-in"></i><span data-i18n="s_in">in house</span><i class="s-out"></i><span data-i18n="s_out">checked out</span></span>
+    </div>
+    <div class="chartwrap"><div id="chart" class="chart"></div></div>
+    <p class="muted" data-i18n="chartHelp">Click an empty night to book that room. Click a booking to open it.</p>
+  </section>
+
+  <!-- ============ BOOKINGS ============ -->
+  <section id="tab-bookings" class="tab">
+    <div class="bar">
+      <input id="bkSearch" class="grow" autocomplete="off" data-i18n-ph="bookingSearchPh">
+      <select id="bkFilter">
+        <option value="upcoming" data-i18n="fUpcoming">Upcoming & in house</option>
+        <option value="all" data-i18n="fAll">All</option>
+        <option value="hold" data-i18n="s_hold">hold</option>
+        <option value="balance" data-i18n="fBalance">Money due</option>
+        <option value="cancelled" data-i18n="fCancelled">Cancelled / no-show</option>
+      </select>
+    </div>
+    <table class="table" id="bkTable">
+      <thead><tr><th data-i18n="ref">Ref</th><th data-i18n="guest">Guest</th><th data-i18n="room">Room</th><th data-i18n="dates">Dates</th><th data-i18n="source">Source</th><th data-i18n="status">Status</th><th class="num" data-i18n="total">Total</th><th class="num" data-i18n="balance">Balance</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- ============ GUESTS ============ -->
+  <section id="tab-guests" class="tab">
+    <div class="bar">
+      <input id="gSearch" class="grow" autocomplete="off" data-i18n-ph="guestSearchPh">
+      <button class="btn primary" id="gNew" data-i18n="newGuest">＋ New guest</button>
+    </div>
+    <table class="table" id="gTable">
+      <thead><tr><th data-i18n="name">Name</th><th data-i18n="phone">Phone</th><th data-i18n="nationality">Nationality</th><th data-i18n="stays">Stays</th><th data-i18n="lastStay">Last stay</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- ============ REPORTS ============ -->
+  <section id="tab-reports" class="tab">
+    <div class="bar">
+      <button class="btn" data-range="month" data-i18n="thisMonth">This month</button>
+      <button class="btn" data-range="last" data-i18n="lastMonth">Last month</button>
+      <button class="btn" data-range="next30" data-i18n="next30">Next 30 days</button>
+      <input type="date" id="rpFrom"> – <input type="date" id="rpTo">
+      <span class="grow"></span>
+      <button class="btn" id="rpCsv">⬇ CSV</button>
+    </div>
+    <div id="rpCards" class="cards"></div>
+    <div class="cols2">
+      <div class="panel"><h3 data-i18n="bySource">Revenue by source</h3><table class="table" id="rpSource"></table></div>
+      <div class="panel"><h3 data-i18n="byRoom">Revenue by room</h3><table class="table" id="rpRoom"></table></div>
+    </div>
+    <div class="panel"><h3 data-i18n="occByDay">Rooms sold per night</h3><div id="rpDays" class="daybars"></div></div>
+    <div class="panel"><h3 data-i18n="outstanding">Checked out with money still due</h3><div id="rpOut" class="list"></div></div>
+  </section>
+
+  <!-- ============ SETTINGS ============ -->
+  <section id="tab-settings" class="tab">
+    <div class="cols2">
+      <form class="panel" id="setForm">
+        <h3 data-i18n="property">Property</h3>
+        <label><span data-i18n="propNameLbl">Name</span><input id="sName" maxlength="80" required></label>
+        <label><span data-i18n="address">Address</span><input id="sAddress" maxlength="200"></label>
+        <div class="grid2">
+          <label><span data-i18n="phone">Phone</span><input id="sPhone" maxlength="30"></label>
+          <label><span data-i18n="email">Email</span><input id="sEmail" maxlength="120"></label>
+        </div>
+        <label><span data-i18n="mapLink">Google Maps link</span><input id="sMap" maxlength="300" placeholder="https://maps.app.goo.gl/…"></label>
+        <div class="grid2">
+          <label><span data-i18n="language">Language</span><select id="sLang"></select></label>
+          <label><span data-i18n="currency">Currency symbol</span><input id="sCur" maxlength="4"></label>
+          <label><span data-i18n="checkInTime">Check-in from</span><input id="sCin" type="time"></label>
+          <label><span data-i18n="checkOutTime">Check-out by</span><input id="sCout" type="time"></label>
+          <label><span data-i18n="countryCode">Country code for WhatsApp</span><input id="sCC" maxlength="4" inputmode="numeric"></label>
+          <label><span data-i18n="holdHours">Hold a room without deposit (hours)</span><input id="sHold" type="number" min="1" max="336"></label>
+        </div>
+        <div><span class="lbl" data-i18n="weekendNights">Weekend price on these nights</span>
+          <div class="days" id="sWeekend"></div></div>
+        <h3 data-i18n="payment">Payment</h3>
+        <label><span data-i18n="promptpayLbl">PromptPay ID (mobile or ID number) for QR codes</span><input id="sPP" maxlength="15" inputmode="numeric"></label>
+        <label><span data-i18n="bankInfo">Bank account (for transfers)</span><input id="sBank" maxlength="200"></label>
+        <h3 data-i18n="guestInfo">Guest information</h3>
+        <label><span data-i18n="wifi">Wi-Fi name & password</span><input id="sWifi" maxlength="120"></label>
+        <label><span data-i18n="houseRules">House rules</span><textarea id="sRules" rows="3" maxlength="1000"></textarea></label>
+        <label><span data-i18n="reviewLink">Review link (Google, TripAdvisor…)</span><input id="sReview" maxlength="300"></label>
+        <label class="check"><input type="checkbox" id="sTm30"> <span data-i18n="tm30On">Remind me to report foreign guests (TM.30)</span></label>
+        <label><span data-i18n="homeNat">Your country's nationality (guests of other nationalities are "foreign")</span><input id="sHome" maxlength="40"></label>
+        <h3 data-i18n="msgSettings">Messages to guests</h3>
+        <label><span data-i18n="confirmMsg">Booking confirmation</span><textarea id="sConfirm" rows="7"></textarea></label>
+        <label><span data-i18n="arrivalMsg">Before arrival (directions, check-in)</span><textarea id="sArrival" rows="7"></textarea></label>
+        <label><span data-i18n="thanksMsg">After check-out (thank you + review)</span><textarea id="sThanks" rows="4"></textarea></label>
+        <p class="muted" data-i18n="msgHelp"></p>
+        <h3 data-i18n="security">Screen lock</h3>
+        <label><span data-i18n="pinLbl">PIN (4-8 digits, empty = no lock)</span><input id="sPin" inputmode="numeric" maxlength="8" autocomplete="off"></label>
+        <button class="btn primary" data-i18n="save">Save</button>
+      </form>
+      <div>
+        <div class="panel">
+          <h3 data-i18n="rooms">Rooms</h3>
+          <table class="table" id="roomTable"></table>
+          <button class="btn" id="roomAdd" data-i18n="addRoom">＋ Add room</button>
+        </div>
+        <div class="panel">
+          <h3 data-i18n="extrasTitle">Extras you sell</h3>
+          <div id="extrasList" class="list"></div>
+          <button class="btn" id="extraAdd" data-i18n="addExtra">＋ Add extra</button>
+        </div>
+        <div class="panel">
+          <h3 data-i18n="dataTitle">Data</h3>
+          <p class="muted" id="dataInfo"></p>
+          <div class="btnrow">
+            <button class="btn" id="bkExport">⬇ <span data-i18n="backup">Backup</span></button>
+            <label class="btn">⬆ <span data-i18n="restore">Restore</span><input type="file" id="bkImport" accept=".json,application/json" hidden></label>
+            <button class="btn danger" id="bkErase" data-i18n="eraseAll">Erase everything</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="modal" hidden><div class="mbox"><button class="mclose" id="mClose">✕</button><div id="mBody"></div></div></div>
+<div class="lock" id="lock" hidden>
+  <form id="lockForm" class="mbox small">
+    <div class="logo big">⌂</div>
+    <h2 id="lockName"></h2>
+    <input id="lockPin" type="password" inputmode="numeric" maxlength="8" autocomplete="off" data-i18n-ph="enterPin">
+    <button class="btn primary big" data-i18n="unlock">Unlock</button>
+    <p class="err" id="lockErr"></p>
+  </form>
+</div>
+<div id="toast" class="toast" hidden></div>
+<div id="print" class="print"></div>
+
+<script src="i18n.js"></script>
+<script src="core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

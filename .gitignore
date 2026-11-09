@@ -1,0 +1,4 @@
+*.log
+# Backups and exports contain guest data
+homestay-backup-*.json
+*.csv
